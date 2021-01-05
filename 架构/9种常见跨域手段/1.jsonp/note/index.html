@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+</head>
+<body>
+<script>
+  function jsonp ({url, params, cb}) {
+    let script = document.createElement('script')
+    return new Promise((resolve, reject) => {
+      window[cb] = function (data) { // window绑定方法执行
+        console.log('data 222-> ', data)
+        resolve(data)
+        document.body.removeChild(script)
+      }
+      params = {...params, cb} // wd=b&cb=show
+      let arrs = []
+      for (let paramsKey in params) {
+        arrs.push(`${paramsKey}=${params[paramsKey]}`)
+      }
+      script.src = `${url}?${arrs.join('&')}`
+
+      document.body.appendChild(script)
+    })
+  }
+
+  // 只能发送get请求  不支持post put delete
+  // 不安全 xss攻击 不采用
+
+  jsonp({
+    url: 'https://www.baidu.com/sugrec?pre=1&p=3&ie=utf-8&json=1&prod=pc&from=pc_web&sugsid=33423,1459,33355,33306,33256,31253,32974,33286,33350,33313,33312,33311,33310,33413,33309,26350,33308,33307,33268,33389,33381,33370&wd=a&req=2&csor=1&cb=jQuery110205541217003213312_1609817560626&_=1609817560627',
+    params: {wd: 'b'},
+    cb: 'show'
+  }).then(data => {
+    console.log('data', data)
+  })
+</script>
+</body>
+</html>
